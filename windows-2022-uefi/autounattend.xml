@@ -74,7 +74,7 @@
                         Generic Volume License Keys (GVLK) for Key Management Services (KMS) client activation
                         https://learn.microsoft.com/en-us/windows-server/get-started/kms-client-activation-keys
                     -->
-                    <!--<Key>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</Key>-->
+                    <Key>VDYBN-27WPP-V4HQT-9VMD4-VMK7H</Key>
                     <WillShowUI>OnError</WillShowUI>
                 </ProductKey>
                 <AcceptEula>true</AcceptEula>

@@ -11,9 +11,10 @@ variable "iso_path" {
   default = "/root/windows.iso"
 }
 source "qemu" "windows" {
-  iso_url      = var.iso_path
-  iso_checksum = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
-  disk_size    = 5100 # 50GB
+  iso_target_path = var.iso_path
+  iso_url         = var.iso_path
+  iso_checksum    = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
+  disk_size       = 5100 # 50GB
   floppy_files = [
     // "drivers/NetKVM/2k22/amd64/*.cat",
     // "drivers/NetKVM/2k22/amd64/*.inf",
@@ -42,7 +43,7 @@ source "qemu" "windows" {
   cpus         = 2
   memory       = 4096
   qemuargs = [
-    ["-cpu", "host"],
+    // ["-cpu", "host"],
     ["-device", "qemu-xhci"],
     ["-device", "virtio-tablet"],
     ["-device", "virtio-scsi-pci,id=scsi0"],
@@ -56,28 +57,29 @@ source "qemu" "windows" {
     ["-device", "virtserialport,chardev=spicechannel0,name=com.redhat.spice.0"],
     ["-spice", "unix,addr=/tmp/{{ .Name }}-spice.socket,disable-ticketing"],
   ]
-  disk_interface           = "virtio-scsi"
-  disk_cache               = "unsafe"
-  disk_discard             = "unmap"
-  format                   = "qcow2"
-  headless                 = true
-  net_device               = "virtio-net"
-  http_directory           = "."
-  shutdown_command         = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
-  communicator             = "ssh"
+
+  vnc_bind_address = "0.0.0.0"
+  disk_interface   = "virtio-scsi"
+  disk_cache       = "unsafe"
+  disk_discard     = "unmap"
+  format           = "qcow2"
+  headless         = false
+  net_device       = "virtio-net"
+  http_directory   = "."
+  shutdown_command = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
+  //   communicator             = "ssh"
   ssh_username             = "vagrant"
   ssh_password             = "vagrant"
   ssh_timeout              = "4h"
   ssh_file_transfer_method = "sftp"
   boot_command             = ["<up><wait10m><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait>"]
   boot_wait                = "10000s"
-
 }
 build {
   sources = ["source.qemu.windows"]
-  provisioner "shell" {
-    inline = [
-      "echo 'Hello, World!' > C:\\hello.txt"
-    ]
-  }
+  //   provisioner "shell" {
+  //     inline = [
+  //       "echo 'Hello, World!' > C:\\hello.txt"
+  //     ]
+  //   }
 }
