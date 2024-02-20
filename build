@@ -7,6 +7,7 @@ NODES=$(cat NODES | awk '{print $1}')
 for node in $NODES; do
   echo "Node: $node"
   WINDOWS_ISO="/root/windows.iso"
+  stat $WINDOWS_ISO && break || echo "windows.iso not found on $node"
   scp -i /root/id_rsa $WINDOWS_ISO $node:$WINDOWS_ISO || echo "Failed to copy windows.iso to $node"
   scp -i /root/id_rsa $node:$WINDOWS_ISO $WINDOWS_ISO || echo "Failed to copy windows.iso from $node"
 done
