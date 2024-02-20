@@ -29,4 +29,4 @@ for node in $NODES; do
   scp -i /root/id_rsa $node:$WINDOWS_ISO $WINDOWS_ISO || echo "Failed to copy windows.iso from $node"
 done
 
-PACKER_LOG=1 packer build ./windows-2022.pkr.hcl
+PACKER_LOG=1 packer build ./windows-2022.pkr.hcl 2>&1 | tee packer.log

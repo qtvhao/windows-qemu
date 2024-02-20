@@ -13,8 +13,31 @@ variable "iso_path" {
 source "qemu" "windows" {
   iso_url      = var.iso_path
   iso_checksum = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
-  disk_size    = 51200 # 50GB
-  accelerator  = "kvm"
+  disk_size    = 5100 # 50GB
+  floppy_files = [
+    // "drivers/NetKVM/2k22/amd64/*.cat",
+    // "drivers/NetKVM/2k22/amd64/*.inf",
+    // "drivers/NetKVM/2k22/amd64/*.sys",
+    // "drivers/qxldod/2k22/amd64/*.cat",
+    // "drivers/qxldod/2k22/amd64/*.inf",
+    // "drivers/qxldod/2k22/amd64/*.sys",
+    // "drivers/vioscsi/2k22/amd64/*.cat",
+    // "drivers/vioscsi/2k22/amd64/*.inf",
+    // "drivers/vioscsi/2k22/amd64/*.sys",
+    // "drivers/vioserial/2k22/amd64/*.cat",
+    // "drivers/vioserial/2k22/amd64/*.inf",
+    // "drivers/vioserial/2k22/amd64/*.sys",
+    // "drivers/viostor/2k22/amd64/*.cat",
+    // "drivers/viostor/2k22/amd64/*.inf",
+    // "drivers/viostor/2k22/amd64/*.sys",
+    // "provision-autounattend.ps1",
+    // "provision-openssh.ps1",
+    // "provision-psremoting.ps1",
+    // "provision-pwsh.ps1",
+    // "provision-winrm.ps1",
+    "windows-2022-uefi/autounattend.xml",
+  ]
+  accelerator  = "none"
   machine_type = "q35"
   cpus         = 2
   memory       = 4096
@@ -46,6 +69,9 @@ source "qemu" "windows" {
   ssh_password             = "vagrant"
   ssh_timeout              = "4h"
   ssh_file_transfer_method = "sftp"
+  boot_command             = ["<up><wait10m><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait><up><wait>"]
+  boot_wait                = "10000s"
+
 }
 build {
   sources = ["source.qemu.windows"]
