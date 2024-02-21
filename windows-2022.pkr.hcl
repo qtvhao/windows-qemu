@@ -43,15 +43,15 @@ source "qemu" "windows" {
   ]
   accelerator  = "kvm"
   machine_type = "q35"
-  cpus         = 2
-  memory       = 4096
+  cpus         = 6
+  memory       = 12288
   qemuargs = [
-    // ["-cpu", "host"],
+    ["-cpu", "host"],
     ["-device", "qemu-xhci"],
     ["-device", "virtio-tablet"],
     // ["-device", "virtio-scsi-pci,id=scsi0"],
     // ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
-    ["-device", "virtio-net,netdev=user.0"],
+    // ["-device", "virtio-net,netdev=user.0"],
     ["-vga", "qxl"],
     ["-device", "virtio-serial-pci"],
     ["-chardev", "socket,path=/tmp/{{ .Name }}-qga.sock,server,nowait,id=qga0"],
@@ -63,11 +63,13 @@ source "qemu" "windows" {
 
   vnc_bind_address = "0.0.0.0"
   disk_interface   = "ide"
-  // disk_cache       = "unsafe"
-  // disk_discard     = "unmap"
+  disk_cache       = "unsafe"
+  disk_discard     = "unmap"
   format                   = "qcow2"
   headless                 = false
-  net_device               = "virtio-net"
+  // net_device (string) - The driver to use for the network interface.
+  // Allowed values ne2k_pci, i82551, i82557b, i82559er, rtl8139, e1000, pcnet, virtio, virtio-net, virtio-net-pci, usb-net, i82559a, i82559b, i82559c, i82550, i82562, i82557a, i82557c, i82801, vmxnet3, i82558a or i82558b. The Qemu builder uses virtio-net by default.
+  net_device               = "e1000"
   http_directory           = "."
   shutdown_command         = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
   communicator             = "ssh"
@@ -80,9 +82,9 @@ source "qemu" "windows" {
 }
 build {
   sources = ["source.qemu.windows"]
-  provisioner "shell" {
-    inline = [
-      "echo 'Hello, World!' > C:\\hello.txt"
-    ]
-  }
+  // provisioner "shell" {
+  //   inline = [
+  //     "echo 'Hello, World!' > C:\\hello.txt"
+  //   ]
+  // }
 }
