@@ -2,11 +2,15 @@ packer {
   required_plugins {
     vagrant = {
       version = "~> 1"
-      source = "github.com/hashicorp/vagrant"
+      source  = "github.com/hashicorp/vagrant"
     }
     qemu = {
       version = "1.0.10"
       source  = "github.com/hashicorp/qemu"
+    }
+    windows-update = {
+      version = "0.15.0"
+      source  = "github.com/rgl/windows-update"
     }
   }
 }
@@ -69,8 +73,8 @@ source "qemu" "windows" {
   disk_interface   = "ide"
   disk_cache       = "unsafe"
   disk_discard     = "unmap"
-  format                   = "qcow2"
-  headless                 = false
+  format           = "qcow2"
+  headless         = false
   // net_device (string) - The driver to use for the network interface.
   // Allowed values ne2k_pci, i82551, i82557b, i82559er, rtl8139, e1000, pcnet, virtio, virtio-net, virtio-net-pci, usb-net, i82559a, i82559b, i82559c, i82550, i82562, i82557a, i82557c, i82801, vmxnet3, i82558a or i82558b. The Qemu builder uses virtio-net by default.
   net_device               = "e1000"
@@ -82,10 +86,39 @@ source "qemu" "windows" {
   ssh_timeout              = "4h"
   ssh_file_transfer_method = "sftp"
   boot_command             = ["<enter><wait30><enter><wait30><enter><wait30><enter><wait30><enter><wait30><enter><wait300>"]
-  boot_wait                = "12m" # 2h 46m 40s
+  boot_wait                = "10m"
 }
 build {
   sources = ["source.qemu.windows"]
+
+
+  provisioner "powershell" {
+    use_pwsh = true
+    script   = "disable-windows-updates.ps1"
+  }
+
+  provisioner "powershell" {
+    use_pwsh = true
+    script   = "disable-windows-defender.ps1"
+  }
+
+  provisioner "powershell" {
+    use_pwsh = true
+    only     = ["qemu.windows-2022-amd64"]
+    script   = "provision-guest-tools-qemu-kvm.ps1"
+  }
+
+  provisioner "windows-restart" {
+  }
+
+  provisioner "powershell" {
+    use_pwsh = true
+    script   = "provision.ps1"
+  }
+
+  provisioner "windows-update" {
+  }
+
   // post-processor "vagrant" {
   //   vagrantfile_template = "Vagrantfile.template"
   // }
