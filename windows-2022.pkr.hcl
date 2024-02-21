@@ -1,5 +1,9 @@
 packer {
   required_plugins {
+    vagrant = {
+      version = "~> 1"
+      source = "github.com/hashicorp/vagrant"
+    }
     qemu = {
       version = "1.0.10"
       source  = "github.com/hashicorp/qemu"
@@ -82,9 +86,7 @@ source "qemu" "windows" {
 }
 build {
   sources = ["source.qemu.windows"]
-  // provisioner "shell" {
-  //   inline = [
-  //     "echo 'Hello, World!' > C:\\hello.txt"
-  //   ]
+  // post-processor "vagrant" {
+  //   vagrantfile_template = "Vagrantfile.template"
   // }
 }
