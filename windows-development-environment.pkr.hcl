@@ -71,8 +71,38 @@ source "qemu" "windows-development-environment" {
   ssh_timeout              = "4h"
   ssh_file_transfer_method = "sftp"
   // boot_command             = ["<wait300>"]
-  boot_wait = "30s"
+  boot_wait = "60s"
 }
 build {
   sources = ["source.qemu.windows-development-environment"]
+    provisioner "powershell" {
+    inline = [
+      "Write-Output 'TASK COMPLETED: VM booted'",
+      "New-Item -Path 'C:\\Users\\vagrant\\Desktop\\provision-files' -ItemType 'directory' -Force",
+    ]
+  }
+  provisioner "file" {
+    source = "provision-files"
+    destination = "C:\\Users\\vagrant\\Desktop\\provision-files"
+  }
+  provisioner "powershell" {
+    inline = [
+      "Set-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Audiosrv -Name Start -Value 00000002",
+      "Write-Output 'TASK COMPLETED: Audio enabled'",
+
+      "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
+      "Write-Output 'TASK COMPLETED: Chocolatey installed'",
+
+      "choco install -y nodejs",
+      "choco install -y googlechrome",
+      "choco install -y git",
+      "choco install -y 7z",
+      "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
+    ]
+  }
+
+  # Restart VM
+  provisioner "windows-restart" {
+    restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
+  }
 }

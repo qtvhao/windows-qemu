@@ -2,5 +2,7 @@
 
 set -xeo pipefail
 
+export DISPLAY=:10.0
+rm -rf output-windows-development-environment || true
 PACKER_LOG=1 packer build ./windows-development-environment.pkr.hcl 2>&1 | tee packer.log
 
