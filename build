@@ -32,6 +32,10 @@ done
 # rm -rf ./output-windows/ || true
 stat output-windows/packer-windows || PACKER_LOG=1 packer build ./windows-2022.pkr.hcl 2>&1 | tee packer.log
 stat output-windows-1708535165 || cp -r output-windows output-windows-1708535165
-qemu-system-x86_64 -m 2048 -hda output-windows-1708535165/packer-windows -enable-kvm -spice port=5900 -display gtk \
+qemu-system-x86_64 -m 16384 -cpu host \
+  -hda output-windows-1708535165/packer-windows \
+  -enable-kvm \
+  -spice port=5900 \
+  -display gtk \
   2>&1 | tee qemu.log
 
