@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -xeo pipefail
+
+PACKER_LOG=1 packer build ./windows-development-environment.pkr.hcl 2>&1 | tee packer.log
+
