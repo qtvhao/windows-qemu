@@ -42,7 +42,7 @@ source "qemu" "windows-development-environment" {
     // ["-device", "virtio-scsi-pci,id=scsi0"],
     // ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
     // ["-device", "virtio-net,netdev=user.0"],
-    ["-net", "user,hostfwd=tcp::3369-:3389"],
+    // ["-net", "user,hostfwd=tcp::3369-:3369"],
     ["-vga", "qxl"],
     ["-device", "virtio-serial-pci"],
     ["-chardev", "socket,path=/tmp/{{ .Name }}-qga.sock,server,nowait,id=qga0"],
@@ -72,10 +72,13 @@ source "qemu" "windows-development-environment" {
 }
 build {
   sources = ["source.qemu.windows-development-environment"]
-  provisioner "powershell" {
-    use_pwsh = true
-    script   = "enable-remote-desktop.ps1"
-  }
+  // provisioner "powershell" {
+  //   use_pwsh = true
+  //   script   = "enable-remote-desktop.ps1"
+  // }
+  // provisioner "windows-restart" {
+  //   restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
+  // }
   provisioner "powershell" {
     inline = [
       "Write-Output 'TASK COMPLETED: VM booted'",
@@ -88,7 +91,6 @@ build {
   }
   provisioner "powershell" {
     inline = [
-      "while (!(Test-Path -Path ${var.test_path})) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Set-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Audiosrv -Name Start -Value 00000002",
       "Write-Output 'TASK COMPLETED: Audio enabled'",
 
@@ -101,6 +103,7 @@ build {
       "choco install -y git",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
+      "while (!(Test-Path -Path ${var.test_path})) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
     ]
   }
 
