@@ -19,7 +19,7 @@ variable "iso_path" {
   default = "./output-windows-1708535165/packer-windows"
 }
 variable "test_path" {
-  type    = string
+  type = string
 }
 source "qemu" "windows-development-environment" {
   //   iso_target_path = var.iso_path
@@ -42,6 +42,7 @@ source "qemu" "windows-development-environment" {
     // ["-device", "virtio-scsi-pci,id=scsi0"],
     // ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
     // ["-device", "virtio-net,netdev=user.0"],
+    ["-net", "user,hostfwd=tcp::3369-:3389"],
     ["-vga", "qxl"],
     ["-device", "virtio-serial-pci"],
     ["-chardev", "socket,path=/tmp/{{ .Name }}-qga.sock,server,nowait,id=qga0"],
@@ -67,35 +68,39 @@ source "qemu" "windows-development-environment" {
   ssh_password             = "vagrant"
   ssh_timeout              = "4h"
   ssh_file_transfer_method = "sftp"
-  boot_wait = "60s"
+  boot_wait                = "60s"
 }
 build {
   sources = ["source.qemu.windows-development-environment"]
-    provisioner "powershell" {
+  provisioner "powershell" {
+    use_pwsh = true
+    script   = "enable-remote-desktop.ps1"
+  }
+  provisioner "powershell" {
     inline = [
       "Write-Output 'TASK COMPLETED: VM booted'",
       "New-Item -Path 'C:\\Users\\vagrant\\Desktop\\provision-files' -ItemType 'directory' -Force",
     ]
   }
   provisioner "file" {
-    source = "provision-files"
+    source      = "provision-files"
     destination = "C:\\Users\\vagrant\\Desktop\\provision-files"
   }
   provisioner "powershell" {
     inline = [
+      "while (!(Test-Path -Path ${var.test_path})) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Set-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Audiosrv -Name Start -Value 00000002",
       "Write-Output 'TASK COMPLETED: Audio enabled'",
 
       "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
       "Write-Output 'TASK COMPLETED: Chocolatey installed'",
-      "while (!(Test-Path -Path ${var.test_path})) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
-      "Write-Output 'TASK COMPLETED: VM provisioned'",
 
       "choco install -y 7zip",
       "choco install -y nodejs",
       "choco install -y googlechrome",
       "choco install -y git",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
+      "Write-Output 'TASK COMPLETED: VM provisioned'",
     ]
   }
 
