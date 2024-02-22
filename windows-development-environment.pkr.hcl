@@ -18,6 +18,9 @@ variable "iso_path" {
   type    = string
   default = "./output-windows-1708535165/packer-windows"
 }
+variable "test_path" {
+  type    = string
+}
 source "qemu" "windows-development-environment" {
   //   iso_target_path = var.iso_path
   iso_url          = var.iso_path
@@ -27,12 +30,6 @@ source "qemu" "windows-development-environment" {
   //   iso_checksum    = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
   disk_size = 51200 # 50GB
   floppy_files = [
-    // "provision-autounattend.ps1",
-    // "provision-openssh.ps1",
-    // "provision-psremoting.ps1",
-    // "provision-pwsh.ps1",
-    // "provision-winrm.ps1",
-    // "windows-2022-uefi/autounattend.xml",
   ]
   accelerator  = "kvm"
   machine_type = "q35"
@@ -70,7 +67,6 @@ source "qemu" "windows-development-environment" {
   ssh_password             = "vagrant"
   ssh_timeout              = "4h"
   ssh_file_transfer_method = "sftp"
-  // boot_command             = ["<wait300>"]
   boot_wait = "60s"
 }
 build {
@@ -92,6 +88,8 @@ build {
 
       "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
       "Write-Output 'TASK COMPLETED: Chocolatey installed'",
+      "while (!(Test-Path -Path ${var.test_path})) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
+      "Write-Output 'TASK COMPLETED: VM provisioned'",
 
       "choco install -y 7zip",
       "choco install -y nodejs",
