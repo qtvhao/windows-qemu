@@ -38,6 +38,8 @@ source "qemu" "windows-development-environment" {
   qemuargs = [
     ["-cpu", "host"],
     ["-device", "qemu-xhci"],
+    ["-device", "e1000,netdev=user.0"],
+    ["-netdev", "user,id=user.0,hostfwd=tcp::2222-:22,hostfwd=tcp::3369-:3389"],
     ["-device", "virtio-tablet"],
     ["-vga", "qxl"],
     ["-device", "virtio-serial-pci"],
@@ -50,6 +52,9 @@ source "qemu" "windows-development-environment" {
 
   vnc_bind_address = "0.0.0.0"
   disk_interface   = "ide"
+  skip_nat_mapping = true
+  ssh_port         = 2222
+  ssh_host         = "127.0.0.1"
   disk_cache       = "unsafe"
   disk_discard     = "unmap"
   format           = "qcow2"
@@ -82,6 +87,7 @@ build {
   }
   provisioner "powershell" {
     inline = [
+      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Set-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Audiosrv -Name Start -Value 00000002",
       "Write-Output 'TASK COMPLETED: Audio enabled'",
 
@@ -93,7 +99,6 @@ build {
       "choco install -y googlechrome",
       "choco install -y git",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
-      // "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
     ]
   }
