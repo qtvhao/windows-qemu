@@ -102,8 +102,8 @@ build {
       "choco install -y googlechrome",
       "choco install -y git",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
+      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
-      "while (!(Test-Path -Path ${var.test_path})) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
     ]
   }
 
