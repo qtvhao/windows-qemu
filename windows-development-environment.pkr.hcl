@@ -39,10 +39,6 @@ source "qemu" "windows-development-environment" {
     ["-cpu", "host"],
     ["-device", "qemu-xhci"],
     ["-device", "virtio-tablet"],
-    // ["-device", "virtio-scsi-pci,id=scsi0"],
-    // ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
-    // ["-device", "virtio-net,netdev=user.0"],
-    // ["-net", "user,hostfwd=tcp::3369-:3369"],
     ["-vga", "qxl"],
     ["-device", "virtio-serial-pci"],
     ["-chardev", "socket,path=/tmp/{{ .Name }}-qga.sock,server,nowait,id=qga0"],
@@ -58,8 +54,7 @@ source "qemu" "windows-development-environment" {
   disk_discard     = "unmap"
   format           = "qcow2"
   headless         = false
-  // net_device (string) - The driver to use for the network interface.
-  // Allowed values ne2k_pci, i82551, i82557b, i82559er, rtl8139, e1000, pcnet, virtio, virtio-net, virtio-net-pci, usb-net, i82559a, i82559b, i82559c, i82550, i82562, i82557a, i82557c, i82801, vmxnet3, i82558a or i82558b. The Qemu builder uses virtio-net by default.
+
   net_device               = "e1000"
   http_directory           = "."
   shutdown_command         = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
@@ -73,10 +68,14 @@ source "qemu" "windows-development-environment" {
 build {
   sources = ["source.qemu.windows-development-environment"]
   provisioner "powershell" {
-    elevated_user = "SYSTEM"
+    elevated_user     = "SYSTEM"
     elevated_password = ""
-    // use_pwsh = true
-    script   = "provision-openssh-2.ps1"
+    script            = "provision-openssh-2.ps1"
+  }
+  provisioner "powershell" {
+    elevated_user     = "SYSTEM"
+    elevated_password = ""
+    script            = "enable-remote-desktop.ps1"
   }
   // provisioner "windows-restart" {
   //   restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
