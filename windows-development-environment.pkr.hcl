@@ -96,7 +96,7 @@ build {
       "choco install -y nodejs",
       "choco install -y vscode",
       "choco install -y git",
-      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 60; Write-Output 'Waiting for file to be created...'}",
+      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 60; Write-Output 'Waiting for file ${var.test_path} to be created...'}",
       "choco install -y 7zip",
       "choco install -y googlechrome",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",

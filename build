@@ -18,5 +18,5 @@ packer version || {
 }
 stat output-windows-1708535165/ || ./build-windows-base
 cp output-windows/packer-windows output-windows-1708535165/packer-windows
-./build-windows-development-environment
+# ./build-windows-development-environment
 
