@@ -73,8 +73,10 @@ source "qemu" "windows-development-environment" {
 build {
   sources = ["source.qemu.windows-development-environment"]
   provisioner "powershell" {
-    use_pwsh = true
-    script   = "winget.ps1"
+    elevated_user = "SYSTEM"
+    elevated_password = ""
+    // use_pwsh = true
+    script   = "provision-openssh-2.ps1"
   }
   // provisioner "windows-restart" {
   //   restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
@@ -97,10 +99,10 @@ build {
       "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
       "Write-Output 'TASK COMPLETED: Chocolatey installed'",
 
-      "choco install -y 7zip",
-      "choco install -y nodejs",
-      "choco install -y googlechrome",
-      "choco install -y git",
+      // "choco install -y 7zip",
+      // "choco install -y nodejs",
+      // "choco install -y googlechrome",
+      // "choco install -y git",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
       // "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
