@@ -87,17 +87,17 @@ build {
   }
   provisioner "powershell" {
     inline = [
-      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Set-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Audiosrv -Name Start -Value 00000002",
       "Write-Output 'TASK COMPLETED: Audio enabled'",
 
       "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))",
       "Write-Output 'TASK COMPLETED: Chocolatey installed'",
 
-      "choco install -y 7zip",
       "choco install -y nodejs",
-      "choco install -y googlechrome",
       "choco install -y git",
+      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
+      "choco install -y 7zip",
+      "choco install -y googlechrome",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
     ]
