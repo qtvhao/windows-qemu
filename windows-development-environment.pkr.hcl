@@ -67,16 +67,6 @@ source "qemu" "windows-development-environment" {
 }
 build {
   sources = ["source.qemu.windows-development-environment"]
-  provisioner "powershell" {
-    elevated_user     = "SYSTEM"
-    elevated_password = ""
-    script            = "provision-openssh-2.ps1"
-  }
-  provisioner "powershell" {
-    elevated_user     = "SYSTEM"
-    elevated_password = ""
-    script            = "enable-remote-desktop.ps1"
-  }
   // provisioner "windows-restart" {
   //   restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
   // }

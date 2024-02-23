@@ -121,6 +121,11 @@ build {
     elevated_password = ""
     script            = "provision-openssh-2.ps1"
   }
+  provisioner "powershell" {
+    elevated_user     = "SYSTEM"
+    elevated_password = ""
+    script            = "enable-remote-desktop.ps1"
+  }
   provisioner "windows-update" {
   }
 
