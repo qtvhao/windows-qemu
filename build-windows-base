@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+stat NODES || ./pic list-nodename /root/id_rsa > NODES
+
+cat NODES | awk '{print $1}'
+
+NODES=$(cat NODES | awk '{print $1}')
+WINDOWS_ISO="/root/windows.iso"
+for node in $NODES; do
+  echo "Node: $node"
+  stat $WINDOWS_ISO && break || echo "windows.iso not found on $node"
+  scp -i /root/id_rsa $WINDOWS_ISO $node:$WINDOWS_ISO || echo "Failed to copy windows.iso to $node"
+  scp -i /root/id_rsa $node:$WINDOWS_ISO $WINDOWS_ISO || echo "Failed to copy windows.iso from $node"
+done
+
+PACKER_LOG=1 packer build ./windows-2022.pkr.hcl 2>&1 | tee packer.log
