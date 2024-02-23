@@ -83,7 +83,7 @@ build {
   }
   provisioner "file" {
     source      = "provision-files"
-    destination = "C:\\Users\\vagrant\\Desktop\\provision-files"
+    destination = "C:\\Users\\vagrant\\Desktop"
   }
   provisioner "powershell" {
     inline = [
