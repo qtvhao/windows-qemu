@@ -72,10 +72,10 @@ source "qemu" "windows-development-environment" {
 }
 build {
   sources = ["source.qemu.windows-development-environment"]
-  // provisioner "powershell" {
-  //   use_pwsh = true
-  //   script   = "enable-remote-desktop.ps1"
-  // }
+  provisioner "powershell" {
+    use_pwsh = true
+    script   = "winget.ps1"
+  }
   // provisioner "windows-restart" {
   //   restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
   // }
@@ -102,7 +102,7 @@ build {
       "choco install -y googlechrome",
       "choco install -y git",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
-      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
+      // "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 5; Write-Output 'Waiting for file to be created...'}",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
     ]
   }
