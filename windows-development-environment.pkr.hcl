@@ -14,7 +14,7 @@ packer {
     // }
   }
 }
-variable "iso_path" {
+variable "disk_image_path" {
   type    = string
   default = "./output-windows-1708535165/packer-windows"
 }
@@ -22,8 +22,7 @@ variable "test_path" {
   type = string
 }
 source "qemu" "windows-development-environment" {
-  //   iso_target_path = var.iso_path
-  iso_url          = var.iso_path
+  iso_url          = var.disk_image_path
   disk_image       = true
   use_backing_file = true
   iso_checksum     = "none"
