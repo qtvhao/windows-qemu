@@ -1,17 +1,8 @@
 #!/bin/bash
 
 set -xeo pipefail
-get_used_display() {
-  local display=0
-  while true; do
-    if [ -f /tmp/.X${display}-lock ]; then
-      break
-    fi
-    display=$((display + 1))
-  done
-  echo $display
-}
-export DISPLAY=":"`get_used_display`
+
+export DISPLAY=":10"
 stat /root/.config/packer/plugins || packer init .
 
 stat NODES || ./pic list-nodename /root/id_rsa > NODES
