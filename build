@@ -17,6 +17,7 @@ packer version || {
     packer init .
 }
 stat output-windows-1708535165/ || ./build-windows-base
+mkdir -p output-windows-1708535165
 cp output-windows/packer-windows output-windows-1708535165/packer-windows
 # ./build-windows-development-environment
 
