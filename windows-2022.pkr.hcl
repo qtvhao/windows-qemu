@@ -1,5 +1,9 @@
 packer {
   required_plugins {
+    virtualbox = {
+      version = "~> 1"
+      source  = "github.com/hashicorp/virtualbox"
+    }
     vagrant = {
       version = "~> 1"
       source  = "github.com/hashicorp/vagrant"
@@ -18,7 +22,39 @@ variable "iso_path" {
   type    = string
   default = "/root/windows.iso"
 }
-source "qemu" "windows" {
+source "virtualbox-iso" "windows-virtualbox" {
+  // guest_os_type = "Ubuntu_64"
+  iso_url         = var.iso_path
+  iso_checksum    = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
+  ssh_username = "vagrant"
+  ssh_password = "vagrant"
+  shutdown_command         = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
+  floppy_files = [
+    // "drivers/NetKVM/2k22/amd64/*.cat",
+    // "drivers/NetKVM/2k22/amd64/*.inf",
+    // "drivers/NetKVM/2k22/amd64/*.sys",
+    // "drivers/qxldod/2k22/amd64/*.cat",
+    // "drivers/qxldod/2k22/amd64/*.inf",
+    // "drivers/qxldod/2k22/amd64/*.sys",
+    // "drivers/vioscsi/2k22/amd64/*.cat",
+    // "drivers/vioscsi/2k22/amd64/*.inf",
+    // "drivers/vioscsi/2k22/amd64/*.sys",
+    // "drivers/vioserial/2k22/amd64/*.cat",
+    // "drivers/vioserial/2k22/amd64/*.inf",
+    // "drivers/vioserial/2k22/amd64/*.sys",
+    // "drivers/viostor/2k22/amd64/*.cat",
+    // "drivers/viostor/2k22/amd64/*.inf",
+    // "drivers/viostor/2k22/amd64/*.sys",
+    "provision-autounattend.ps1",
+    "provision-openssh.ps1",
+    "provision-psremoting.ps1",
+    "provision-pwsh.ps1",
+    "provision-winrm.ps1",
+    "windows-2022-uefi/autounattend.xml",
+  ]
+
+}
+source "qemu" "windows-qemu" {
   // iso_url           = "https://cdimage.debian.org/cdimage/archive/latest-oldstable/amd64/iso-dvd/debian-11.9.0-amd64-DVD-1.iso"
   // iso_checksum      = "md5:4f58d1b19e858beb2eb4545f11904f86"
 
@@ -89,7 +125,10 @@ source "qemu" "windows" {
   boot_wait                = "10m"
 }
 build {
-  sources = ["source.qemu.windows"]
+  sources = [
+    "source.virtualbox-iso.windows-virtualbox",
+    // "source.qemu.windows"
+  ]
 
 
   provisioner "powershell" {
@@ -126,8 +165,8 @@ build {
     elevated_password = ""
     script            = "enable-remote-desktop.ps1"
   }
-  provisioner "windows-update" {
-  }
+  // provisioner "windows-update" {
+  // }
 
   // post-processor "vagrant" {
   //   vagrantfile_template = "Vagrantfile.template"
