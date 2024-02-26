@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "gitlab.gitlab-workflow",
+        "github.copilot",
+        "hashicorp.terraform",
+        "hashicorp.hcl"
+    ]
+}
