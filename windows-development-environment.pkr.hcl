@@ -30,13 +30,17 @@ source "virtualbox-ovf" "windows-development-environment" {
   ssh_username     = "vagrant"
   ssh_password     = "vagrant"
   shutdown_command = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
+  vboxmanage = [
+  // add port 3369 to 3389 for RDP
+    ["modifyvm", "{{.Name}}", "--natpf1", "rdp,tcp,,3369,,3389"],
+    // [ "modifyvm", "{{.Name}}", "--firmware", "EFI" ],
+  ]
 }
 source "qemu" "windows-development-environment" {
   iso_url          = var.disk_image_path
   disk_image       = true
   use_backing_file = true
   iso_checksum     = "none"
-  //   iso_checksum    = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
   disk_size = 51200 # 50GB
   floppy_files = [
   ]
@@ -96,6 +100,7 @@ build {
   }
   provisioner "powershell" {
     inline = [
+      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 60; Write-Output 'Waiting for file ${var.test_path} to be created...'}",
       "Set-ItemProperty -Path HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Audiosrv -Name Start -Value 00000002",
       "Write-Output 'TASK COMPLETED: Audio enabled'",
 
@@ -105,7 +110,6 @@ build {
       "choco install -y nodejs",
       "choco install -y vscode",
       "choco install -y git",
-      "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 60; Write-Output 'Waiting for file ${var.test_path} to be created...'}",
       "choco install -y 7zip",
       "choco install -y googlechrome",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
