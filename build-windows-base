@@ -2,6 +2,14 @@
 
 set -xeo pipefail
 
+curl https://raw.githubusercontent.com/qtvhao/picloud/main/pic -o pic && chmod +x pic
+packer version || {
+    wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
+    apt update && apt install packer -y
+    packer init .
+}
+
 export DISPLAY=":10"
 stat /root/.config/packer/plugins || packer init .
 
@@ -17,5 +25,6 @@ for node in $NODES; do
   scp -i /root/id_rsa $WINDOWS_ISO $node:$WINDOWS_ISO || echo "Failed to copy windows.iso to $node"
   scp -i /root/id_rsa $node:$WINDOWS_ISO $WINDOWS_ISO || echo "Failed to copy windows.iso from $node"
 done
+rm -rf ./output-windows-virtualbox/ || true
 
 PACKER_LOG=1 packer build ./windows-2022.pkr.hcl 2>&1 | tee packer.log

@@ -43,7 +43,9 @@ if ($systemVendor -eq 'QEMU') {
 } elseif ($systemVendor -eq 'VMware, Inc.') {
     # do nothing. VMware Tools were already installed by provision-vmtools.ps1 (executed from autounattend.xml).
 } else {
-    throw "Cannot install Guest Additions: Unsupported system ($systemVendor)."
+    # exit process without error,
+    # because we don't want to fail the entire provisioning process just because we can't install Guest Additions.
+    Write-Host "WARNING: don't know how to install Guest Additions for system vendor '$systemVendor'."
 }
 
 Write-Host 'Setting the vagrant account properties...'
