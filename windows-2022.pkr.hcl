@@ -23,12 +23,14 @@ variable "iso_path" {
   default = "/root/windows.iso"
 }
 source "virtualbox-iso" "windows-virtualbox" {
-  // guest_os_type = "Ubuntu_64"
+  guest_os_type  = "Windows2022_64"
   iso_url         = var.iso_path
   iso_checksum    = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
   ssh_username = "vagrant"
   ssh_password = "vagrant"
   shutdown_command         = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
+  cpus         = 6
+  memory       = 12288
   floppy_files = [
     // "drivers/NetKVM/2k22/amd64/*.cat",
     // "drivers/NetKVM/2k22/amd64/*.inf",
@@ -52,12 +54,10 @@ source "virtualbox-iso" "windows-virtualbox" {
     "provision-winrm.ps1",
     "windows-2022-uefi/autounattend.xml",
   ]
-
+  boot_command             = ["<enter><wait30><enter><wait30><enter><wait30><enter><wait30><enter><wait30><enter><wait300>"]
+  boot_wait                = "10m"
 }
 source "qemu" "windows-qemu" {
-  // iso_url           = "https://cdimage.debian.org/cdimage/archive/latest-oldstable/amd64/iso-dvd/debian-11.9.0-amd64-DVD-1.iso"
-  // iso_checksum      = "md5:4f58d1b19e858beb2eb4545f11904f86"
-
   iso_target_path = var.iso_path
   iso_url         = var.iso_path
   iso_checksum    = "sha256:a6f470ca6d331eb353b815c043e327a347f594f37ff525f17764738fe812852e"
