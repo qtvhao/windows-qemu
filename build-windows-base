@@ -25,6 +25,14 @@ for node in $NODES; do
   scp -i /root/id_rsa $WINDOWS_ISO $node:$WINDOWS_ISO || echo "Failed to copy windows.iso to $node"
   scp -i /root/id_rsa $node:$WINDOWS_ISO $WINDOWS_ISO || echo "Failed to copy windows.iso from $node"
 done
-rm -rf ./output-windows-virtualbox/ || true
 
-PACKER_LOG=1 packer build ./windows-2022.pkr.hcl 2>&1 | tee packer.log
+stat ./windows-installed/packer-windows-virtualbox-1708999724.ovf || \
+    (PACKER_LOG=1 packer build ./windows-2022.pkr.hcl 2>&1 | tee packer.log && \
+      mkdir -p ./windows-installed/ && \
+      cp ./output-windows-virtualbox/* ./windows-installed/)
+
+stat ./windows-updated/packer-windows-installed-1709014984.ovf || \
+    (PACKER_LOG=1 packer build ./windows-latest.pkr.hcl 2>&1 | tee packer.log
+      mkdir -p ./windows-updated/ && \
+      cp ./output-windows-installed/* ./windows-updated/)
+
