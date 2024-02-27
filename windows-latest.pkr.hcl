@@ -29,7 +29,6 @@ variable "vmdk_file" {
 variable "source_path" {
   type    = string
   default = "./output-windows-virtualbox/"
-
 }
 source "virtualbox-ovf" "windows-installed" {
   source_path = var.ovf_file

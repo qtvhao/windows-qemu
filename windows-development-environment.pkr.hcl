@@ -21,6 +21,16 @@ variable "disk_image_path" {
 variable "test_path" {
   type = string
 }
+variable "ovf_file" {
+  type    = string
+  default = "./windows-updated/packer-windows-installed-1709014984.ovf"
+}
+source "virtualbox-ovf" "windows-development-environment" {
+  source_path      = var.ovf_file
+  ssh_username     = "vagrant"
+  ssh_password     = "vagrant"
+  shutdown_command = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
+}
 source "qemu" "windows-development-environment" {
   iso_url          = var.disk_image_path
   disk_image       = true
@@ -70,7 +80,7 @@ source "qemu" "windows-development-environment" {
   boot_wait                = "60s"
 }
 build {
-  sources = ["source.qemu.windows-development-environment"]
+  sources = ["source.virtualbox-ovf.windows-development-environment"]
   // provisioner "windows-restart" {
   //   restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
   // }
