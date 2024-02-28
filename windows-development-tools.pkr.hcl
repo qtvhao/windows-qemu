@@ -41,7 +41,7 @@ build {
       "choco install -y vscode",
       "choco install -y git",
       "choco install -y 7zip",
-      // "choco install -y googlechrome",
+      "choco install -y virtualbox-guest-additions-guest.install",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
     ]
