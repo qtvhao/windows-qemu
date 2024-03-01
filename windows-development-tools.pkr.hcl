@@ -23,9 +23,9 @@ source "virtualbox-ovf" "windows-development-tools" {
   ssh_username     = "vagrant"
   ssh_password     = "vagrant"
   shutdown_command = "shutdown /s /t 0 /f /d p:4:1 /c \"Packer Shutdown\""
-  // vboxmanage = [
-  //   ["modifyvm", "{{.Name}}", "--natpf1", "rdp,tcp,,3369,,3389"],
-  // ]
+  vboxmanage = [
+    ["modifyvm", "{{.Name}}", "--nic1", "nat", "--natpf1", "ssh,tcp,,2222,,22"],
+  ]
 }
 build {
   sources = ["source.virtualbox-ovf.windows-development-tools"]
@@ -40,13 +40,18 @@ build {
       "choco install -y nodejs",
       "choco install -y git",
       "choco install -y 7zip",
+      "choco install -y yarn",
       "choco install -y virtualbox-guest-additions-guest.install",
     ]
   }
+  # Restart VM
+  provisioner "windows-restart" {
+    restart_check_command = "powershell -command \"& {Write-Output 'Packer Build VM restarted'}\""
+  }
   provisioner "powershell" {
     inline = [
+      // "while (!(Test-Path -Path 'a')) { Start-Sleep -Seconds 60; Write-Output 'Waiting for file a to be created...'}",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
-      "npm install -g yarn",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
     ]
   }
