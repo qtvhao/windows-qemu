@@ -38,7 +38,6 @@ build {
       "Write-Output 'TASK COMPLETED: Chocolatey installed'",
 
       "choco install -y nodejs",
-      "choco install -y vscode",
       "choco install -y git",
       "choco install -y 7zip",
       "choco install -y virtualbox-guest-additions-guest.install",
@@ -46,8 +45,6 @@ build {
   }
   provisioner "powershell" {
     inline = [
-      "code --install-extension github.copilot",
-      "code --install-extension ms-vscode.powershell",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
       "npm install -g yarn",
       "Write-Output 'TASK COMPLETED: VM provisioned'",
