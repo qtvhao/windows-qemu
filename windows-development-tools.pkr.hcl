@@ -42,6 +42,10 @@ build {
       "choco install -y git",
       "choco install -y 7zip",
       "choco install -y virtualbox-guest-additions-guest.install",
+    ]
+  }
+  provisioner "powershell" {
+    inline = [
       "code --install-extension github.copilot",
       "code --install-extension ms-vscode.powershell",
       "Write-Output 'TASK COMPLETED: Chocolatey packages installed...'",
