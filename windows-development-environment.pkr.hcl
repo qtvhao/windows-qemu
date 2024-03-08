@@ -94,10 +94,6 @@ build {
       "New-Item -Path 'C:\\Users\\vagrant\\Desktop\\provision-files' -ItemType 'directory' -Force",
     ]
   }
-  provisioner "file" {
-    source      = "provision-files"
-    destination = "C:\\Users\\vagrant\\Desktop"
-  }
   provisioner "powershell" {
     inline = [
       "while (!(Test-Path -Path '${var.test_path}')) { Start-Sleep -Seconds 60; Write-Output 'Waiting for file ${var.test_path} to be created...'}",
