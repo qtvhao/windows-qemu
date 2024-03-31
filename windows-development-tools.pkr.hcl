@@ -14,7 +14,7 @@ packer {
     // }
   }
 }
-variable "ovf_file" {
+variable "ovf_file_2" {
   type    = string
   default = "./output-windows-development-environment/packer-windows-development-environment-1709042403.ovf"
 }
